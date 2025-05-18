@@ -10,3 +10,9 @@ export interface ResultData {
     monthly: string;
     total: string;
 }
+export interface FormErrors {
+    amount: boolean;
+    term: boolean;
+    interest: boolean;
+    mortgageType: boolean;
+}

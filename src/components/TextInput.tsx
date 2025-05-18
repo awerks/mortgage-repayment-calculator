@@ -3,6 +3,8 @@ export default function TextInput({
     label,
     value,
     icon,
+    error,
+    errorMessage,
     iconPosition = "left",
     onChange,
 }: {
@@ -10,6 +12,8 @@ export default function TextInput({
     label: string;
     value: number;
     icon?: string;
+    error: boolean;
+    errorMessage: string;
     iconPosition?: "left" | "right";
     onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }) {
@@ -22,7 +26,6 @@ export default function TextInput({
                 {" "}
                 {iconPosition === "left" && (
                     <span className="shrink-0 bg-slate-100 px-4 py-2 text-center font-bold text-slate-600">
-                        {" "}
                         {icon}
                     </span>
                 )}
@@ -34,11 +37,22 @@ export default function TextInput({
                     className="min-w-0 grow border-none px-4 py-2 outline-none focus:ring-0"
                 />
                 {iconPosition === "right" && (
-                    <span className="shrink-0 bg-slate-100 px-4 py-2 text-center font-bold text-slate-600">
+                    <span
+                        className={`shrink-0 px-4 py-2 text-center font-bold ${
+                            error
+                                ? "bg-primary-red border-primary-red text-white"
+                                : "bg-slate-100 text-slate-600"
+                        }`}
+                    >
                         {icon}
                     </span>
                 )}
             </div>
+            {error && (
+                <p className="error text-primary-red mt-2 text-sm">
+                    {errorMessage}
+                </p>
+            )}
         </>
     );
 }

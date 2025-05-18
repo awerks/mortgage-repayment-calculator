@@ -4,7 +4,7 @@ import TextInput from "./components/TextInput";
 import RadioInput from "./components/RadioInput";
 import { ClearButton, CalculateButton } from "./components/Buttons";
 import { calculateMonthly, calculateTotal } from "./utils";
-import type { MortgageType, ResultData, FormData } from "./types";
+import type { MortgageType, ResultData, FormData, FormErrors } from "./types";
 import "./index.css";
 
 function App() {
@@ -26,17 +26,27 @@ function Calculator() {
         monthly: "",
         total: "",
     });
-    const [error, setError] = useState(false);
     const [success, setSuccess] = useState(false);
+    const [formErrors, setFormErrors] = useState<FormErrors>({
+        amount: false,
+        term: false,
+        interest: false,
+        mortgageType: false,
+    });
     function handleFormSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
         const { amount, term, interest, mortgageType } = formData;
-        if (!amount || !term || !interest || !mortgageType) {
-            setError(true);
+        const errors: FormErrors = {
+            amount: !amount || amount <= 0,
+            term: !term || term <= 0,
+            interest: !interest || interest <= 0,
+            mortgageType: !mortgageType,
+        };
+        setFormErrors(errors);
+        if (Object.values(errors).some((error) => error)) {
             setSuccess(false);
             return;
         }
-        setError(false);
         setSuccess(true);
         const monthly = calculateMonthly(amount, term, interest, mortgageType);
         const total = calculateTotal(amount, term, interest, mortgageType);
@@ -65,6 +75,12 @@ function Calculator() {
                         onClick={() => {
                             resetFields();
                             setSuccess(false);
+                            setFormErrors({
+                                amount: false,
+                                term: false,
+                                interest: false,
+                                mortgageType: false,
+                            });
                         }}
                     />
                 </div>
@@ -72,20 +88,28 @@ function Calculator() {
                     action="
                 "
                     onSubmit={handleFormSubmit}
-                    className="space-y-5"
+                    className="[&>*:not(:first-child,p.error)]:mt-4"
                 >
                     <TextInput
                         htmlFor="amount"
                         label="Mortgage amount"
-                        onChange={(e) =>
+                        onChange={(e) => {
                             setFormData({
                                 ...formData,
                                 amount: parseInt(e.target.value),
-                            })
-                        }
+                            });
+                            if (e.target.value !== "") {
+                                setFormErrors({
+                                    ...formErrors,
+                                    amount: false,
+                                });
+                            }
+                        }}
                         icon={"£"}
                         value={formData.amount}
                         iconPosition="left"
+                        error={formErrors.amount}
+                        errorMessage="Please enter a valid amount"
                     />
                     <div className="gap-4 md:grid md:grid-cols-2">
                         <div className="space-y-2">
@@ -94,12 +118,20 @@ function Calculator() {
                                 label="Mortgage term"
                                 icon={"years"}
                                 value={formData.term}
-                                onChange={(e) =>
+                                onChange={(e) => {
                                     setFormData({
                                         ...formData,
                                         term: parseInt(e.target.value),
-                                    })
-                                }
+                                    });
+                                    if (e.target.value !== "") {
+                                        setFormErrors({
+                                            ...formErrors,
+                                            term: false,
+                                        });
+                                    }
+                                }}
+                                error={formErrors.term}
+                                errorMessage="Please enter a valid term"
                                 iconPosition="right"
                             />
                         </div>
@@ -108,12 +140,20 @@ function Calculator() {
                                 htmlFor="interest"
                                 label="Interest rate"
                                 value={formData.interest}
-                                onChange={(e) =>
+                                onChange={(e) => {
                                     setFormData({
                                         ...formData,
                                         interest: parseInt(e.target.value),
-                                    })
-                                }
+                                    });
+                                    if (e.target.value !== "") {
+                                        setFormErrors({
+                                            ...formErrors,
+                                            interest: false,
+                                        });
+                                    }
+                                }}
+                                error={formErrors.interest}
+                                errorMessage="Please enter a valid interest rate"
                                 icon={"%"}
                                 iconPosition="right"
                             />
@@ -125,10 +165,16 @@ function Calculator() {
                         name="mortgage-type"
                         checked={formData.mortgageType === "repayment"}
                         value="Repayment"
+                        error={formErrors.mortgageType}
+                        errorMessage="Please select a mortgage type"
                         onChange={() => {
                             setFormData({
                                 ...formData,
                                 mortgageType: "repayment",
+                            });
+                            setFormErrors({
+                                ...formErrors,
+                                mortgageType: false,
                             });
                         }}
                     />
@@ -136,10 +182,16 @@ function Calculator() {
                         htmlFor="interest-only"
                         name="mortgage-type"
                         checked={formData.mortgageType === "interest"}
+                        error={formErrors.mortgageType}
+                        errorMessage="Please select a mortgage type"
                         onChange={() => {
                             setFormData({
                                 ...formData,
                                 mortgageType: "interest",
+                            });
+                            setFormErrors({
+                                ...formErrors,
+                                mortgageType: false,
                             });
                         }}
                         value="Interest only"

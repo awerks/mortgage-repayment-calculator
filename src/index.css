@@ -21,12 +21,20 @@
         height: 100%;
     }
 
-    body {
+    main {
         font-family: "Plus Jakarta Sans", sans-serif;
         font-weight: 500;
+        padding: 2rem;
     }
     span {
         overflow-wrap: break-word;
+    }
+}
+@media (max-width: 640px) {
+    @layer base {
+        main {
+            padding: 0;
+        }
     }
 }
 
