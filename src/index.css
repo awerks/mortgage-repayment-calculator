@@ -13,12 +13,7 @@
 
 @layer base {
     html {
-        -webkit-font-smoothing: antialiased;
-        font-synthesis: none;
-        text-rendering: optimizeLegibility;
-        -moz-osx-font-smoothing: grayscale;
-        font-size: 20px;
-        line-height: 1.5;
+        line-height: 1.6;
     }
     body,
     html,
@@ -28,6 +23,5 @@
     body {
         font-family: "Plus Jakarta Sans", sans-serif;
         font-weight: 500;
-        color: rgba(152, 87, 87, 0.87);
     }
 }
